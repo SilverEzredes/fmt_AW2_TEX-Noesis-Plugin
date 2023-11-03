@@ -8,5 +8,8 @@ A plugin for Rich Whitehouse's Noesis to import and export Alan Wake 2 .tex file
 - Re-launch the program or select `Tools -> Reload Plugins`
 
 Opening a .tex file with Noesis will automatically load it, once the plugin is installed.
+
 ## Credits:
 - Thanks to AlphaZomega for his guidence and his fmt_RE_Mesh plugin.
+### Support:
+If you have issues with the plugin, create an issue here or join [Modding Haven](https://discord.gg/9Vr2SJ3) and message me on Discord
