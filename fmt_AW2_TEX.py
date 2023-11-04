@@ -3,12 +3,12 @@
 #
 #      File: fmt_AW2_TEX.py
 #    Author: SilverEzredes
-#   Version: November 03, 2023 - v0.9.0
+#   Version: November 04, 2023 - v0.9.1
 #   Purpose: To import and export Alan Wake 2 .tex files
 #   Credits: alphaZomega
 #------------------------------------------------
 
-#Options:
+#--- Options:
 bAW2Export = False       #Enable or disable export of .tex from the export list
 
 from inc_noesis import *
@@ -27,11 +27,12 @@ def CheckType(data):
 def LoadRGBA(data, texList):
     bs = NoeBitStream(data)
 
-    magic = bs.readUInt()
-    if magic == 1781678667:
+    magic = bs.readUShort()
+    if magic == 16971:
          print("Error: Invalid magic! This is a Bink video file.")
          return 0
     
+    magic2 = bs.readUShort()
     size = bs.readUInt()
     flags = bs.readUInt()
     height = bs.readUInt()
@@ -61,8 +62,10 @@ def LoadRGBA(data, texList):
     miscFlag2 = bs.readUInt()
 
     texData = bs.readBytes(width*height)
-
-    if dxgiFormat == 71 or dxgiFormat == 72: #BC1_UNORM_SRGB
+    if dxgiFormat == 10:
+        texData = rapi.imageDecodeRaw(texData, width, height, "R16G16B16A16")
+        print("DDS Format: R16G16B16A16")
+    elif dxgiFormat == 71 or dxgiFormat == 72: #BC1_UNORM_SRGB
         texData = bs.readBytes(width*height // 2)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC1) 
         print("DDS Format: BC1_UNORM_SRGB")
@@ -76,6 +79,9 @@ def LoadRGBA(data, texList):
     elif dxgiFormat == 83: #BC5_UNORM
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC5)
         print("DDS Format: BC5_UNORM")
+    elif dxgiFormat == 87:
+        texData = rapi.imageDecodeRaw(texData, width, height, "R8G8B8A8")   
+        print("DDS Format: R8G8B8A8") 
     elif dxgiFormat == 95 or dxgiFormat == 96: #couldn't find any BC6 textures so far 11.03.2023
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC6H)
         print("DDS Format: BC6")
