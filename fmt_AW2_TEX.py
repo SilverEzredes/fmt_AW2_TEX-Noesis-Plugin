@@ -3,7 +3,7 @@
 #
 #      File: fmt_AW2_TEX.py
 #    Author: SilverEzredes
-#   Version: November 11, 2023 - v0.9.4
+#   Version: November 18, 2023 - v0.9.5
 #   Purpose: To import and export Alan Wake 2 .tex files
 #   Credits: alphaZomega
 #------------------------------------------------
@@ -82,6 +82,10 @@ def LoadRGBA(data, texList):
     if dxgiFormat == 10:
         texData = rapi.imageDecodeRaw(texData, width, height, "R16G16B16A16")
         print("Format: R16G16B16A16")
+    elif dxgiFormat == 56:
+        texData = bs.readBytes(width*height)*2
+        texData = rapi.imageDecodeRaw(texData, width, height, "R16")
+        print("Format: R16_UNORM")
     elif dxgiFormat == 71 or dxgiFormat == 72:
         texData = bs.readBytes(width*height // 2)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC1) 
@@ -97,7 +101,8 @@ def LoadRGBA(data, texList):
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC5)
         print("Format: BC5_UNORM")
     elif dxgiFormat == 87: #TO DO
-        texData = rapi.imageDecodeRaw(texData, width, height, "B8G8R8A8")
+        texData = bs.readBytes(width*height * 2)
+        texData = rapi.imageDecodeRaw(texData, width, height, "b8g8r8a8")
         print("Format: B8G8R8A8_UNORM") 
     elif dxgiFormat == 95 or dxgiFormat == 96: #couldn't find any BC6 textures so far 11.03.2023
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC6H)
