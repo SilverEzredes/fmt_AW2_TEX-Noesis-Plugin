@@ -3,7 +3,7 @@
 #
 #      File: fmt_AW2_TEX.py
 #    Author: SilverEzredes
-#   Version: November 18, 2023 - v0.9.5
+#   Version: November 19, 2023 - v0.9.6
 #   Purpose: To import and export Alan Wake 2 .tex files
 #   Credits: alphaZomega
 #------------------------------------------------
@@ -37,22 +37,19 @@ def LoadRGBA(data, texList):
 
     magic = bs.readUShort()
     if magic == 16971:
-         print("Error: Invalid magic! This is a Bink video file.")
+         print("ERROR: Invalid magic! This is a Bink video file.")
          return 0
-    
     magic2 = bs.readUShort()
     size = bs.readUInt()
     flags = bs.readUInt()
     height = bs.readUInt()
     if height % 4 != 0:
         height += 4 - (height % 4)
-        print("Warning: Texture height adjusted!")
-
+        print("WARNING: Texture height adjusted!")
     width = bs.readUInt()
     if width % 4 != 0:
         width += 4 - (width % 4)
-        print("Warning: Texture width adjusted!")
-
+        print("WARNING: Texture width adjusted!")
     linerSize = bs.readUInt()
     depth = bs.readUInt()
     mipMapCount = bs.readUInt()
@@ -76,10 +73,9 @@ def LoadRGBA(data, texList):
     miscFlag = bs.readUInt()
     arraySize = bs.readUInt()
     miscFlag2 = bs.readUInt()
-
-    texData = bs.readBytes(width*height)
-
+    
     if dxgiFormat == 10:
+        texData = bs.readBytes(width*height)
         texData = rapi.imageDecodeRaw(texData, width, height, "R16G16B16A16")
         print("Format: R16G16B16A16")
     elif dxgiFormat == 56:
@@ -91,6 +87,7 @@ def LoadRGBA(data, texList):
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC1) 
         print("Format: BC1_UNORM_SRGB")
     elif dxgiFormat == 77 or dxgiFormat == 78:
+        texData = bs.readBytes(width*height)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC3)
         print("Format: BC3_UNORM_SRGB")
     elif dxgiFormat == 80:
@@ -98,20 +95,27 @@ def LoadRGBA(data, texList):
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC4)
         print("Format: BC4_UNORM")
     elif dxgiFormat == 83:
+        texData = bs.readBytes(width*height)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC5)
         print("Format: BC5_UNORM")
-    elif dxgiFormat == 87: #TO DO
-        texData = bs.readBytes(width*height * 2)
-        texData = rapi.imageDecodeRaw(texData, width, height, "b8g8r8a8")
+    elif dxgiFormat == 87:
+        texData = bs.readBytes(width*height*4)
+        texData = rapi.imageDecodeRaw(texData, width, height, "B8G8R8A8")
         print("Format: B8G8R8A8_UNORM") 
+    elif dxgiFormat == 91:
+        texData = bs.readBytes(width*height*4)
+        texData = rapi.imageDecodeRaw(texData, width, height, "B8G8R8A8_SRGB")
+        print("Format: B8G8R8A8_UNORM_SRGB")
     elif dxgiFormat == 95 or dxgiFormat == 96: #couldn't find any BC6 textures so far 11.03.2023
+        texData = bs.readBytes(width*height)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC6H)
         print("Format: BC6")
     elif dxgiFormat == 98 or dxgiFormat == 99:
+        texData = bs.readBytes(width*height)
         texData = rapi.imageDecodeDXT(texData, width, height, noesis.FOURCC_BC7)
         print("Format: BC7_UNORM_SRGB")
     else:
-        print("Fatal Error: Unsupported texture type!")
+        print("FATAL ERROR: Unsupported texture type!")
         return 0
     
     tex = NoeTexture("AW2.tex", width, height, texData, noesis.NOESISTEX_RGBA32)
