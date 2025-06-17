@@ -1,5 +1,5 @@
 # fmt_AW2_TEX-Noesis-Plugin
-A plugin for Rich Whitehouse's Noesis to import and export Alan Wake 2 textures.
+A plugin for Rich Whitehouse's Noesis to import and export Alan Wake 2 and FBC Firebreak textures.
 
 # Installation:
 - Download via `Code -> Download as ZIP`
